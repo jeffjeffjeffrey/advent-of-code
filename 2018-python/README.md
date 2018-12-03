@@ -7,9 +7,9 @@ Python 3
 
 ## Instructions
 
-Each day's puzzle solution lives in a file named dayX.py, with its associated input in inputX.txt. A solution expects its input to be given on stdin, for example:
+Each day's puzzle solution lives in a file named `dayX.py`, with its associated input in `inputX.txt`. A solution expects its input to be given on `stdin`, for example:
 
-$ cat input1.txt | python3 ./day1.py
+`$ cat input1.txt | python3 ./day1.py`
 
 I'm using this as a chance to re-familiarize myself with Python, which I haven't used in many years.
 
