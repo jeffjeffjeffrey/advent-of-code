@@ -17,7 +17,6 @@ for rectangle in data:
 print(sum([1 for row in fabric for value in row if value > 1]))
 
 # Part 2
-
 for rectangle in data:
   rectangle_size = rectangle['width'] * rectangle['height']
   total_claims = 0
