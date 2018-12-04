@@ -19,31 +19,20 @@ for row in log:
     sleep_start_minute = row['minute']
   elif row['action'] == 'wakes up':
     for m in range(sleep_start_minute, row['minute']):
-      asleep_times[current_guard] = asleep_times.get(current_guard, {})
-      asleep_times[current_guard][m] = asleep_times[current_guard].get(m, 0) + 1
+      if current_guard not in asleep_times:
+        asleep_times[current_guard] = [0] * 60
+      asleep_times[current_guard][m] += 1
   else:
     current_guard = int(re.match('Guard #(\d*) begins shift', row['action']).groups()[0])
 
-# Part 1
-guard_totals = {}
-for guard in asleep_times:
-  guard_totals[guard] = sum(v for v in asleep_times[guard].values())
-
-def key_of_max_value(dictionary):
-  return max(dictionary.keys(), key = (lambda k: dictionary[k]))
-
-sleepiest_guard = key_of_max_value(guard_totals)
-sleepiest_minute = key_of_max_value(asleep_times[sleepiest_guard])
+# Part 1: Find the guard with the most total minutes asleep, and then find his sleepiest minute
+sleepiest_guard = max(asleep_times.keys(), key = (lambda k: sum(asleep_times[k])))
+sleepiest_minute = max(range(60), key = (lambda k: asleep_times[sleepiest_guard][k]))
 
 print(sleepiest_guard, sleepiest_minute, sleepiest_guard * sleepiest_minute)
 
-# Part 2
-sleepiest_minutes = {}
-for guard in asleep_times:
-  sleepiest_minute = key_of_max_value(asleep_times[guard])
-  sleepiest_minutes[guard] = (sleepiest_minute, asleep_times[guard][sleepiest_minute])
-
-sleepiest_guard = max(sleepiest_minutes.keys(), key = (lambda k: sleepiest_minutes[k][1]))
-sleepiest_minute = sleepiest_minutes[sleepiest_guard][0]
+# Part 2: Find the guard asleep most often in a single minute, and then find his sleepiest minute
+sleepiest_guard = max(asleep_times.keys(), key = (lambda k: max(asleep_times[k])))
+sleepiest_minute = max(range(60), key = (lambda k: asleep_times[sleepiest_guard][k]))
 
 print(sleepiest_guard, sleepiest_minute, sleepiest_guard * sleepiest_minute)
