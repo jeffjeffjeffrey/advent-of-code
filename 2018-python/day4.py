@@ -7,14 +7,11 @@ for row in sys.stdin.readlines():
   fields = re.match('\[1518-(\d\d)-(\d\d) (\d\d):(\d\d)\] (.*)', row).groups()
   data += [{'month': int(fields[0]), 'day': int(fields[1]), 'hour': int(fields[2]), 'minute': int(fields[3]), 'action': fields[4]}]
 
-# Sort the rows by date and time
-log = sorted(data, key = lambda r: (r['month'], r['day'], r['hour'], r['minute']))
-
-# Create minute-by-minute sleep log
+# Record the number of times each guard is asleep for each minute of the midnight hour
 current_guard = None
 sleep_start_minute = None
 asleep_times = {}
-for row in log:
+for row in sorted(data, key = lambda r: (r['month'], r['day'], r['hour'], r['minute'])):
   if row['action'] == 'falls asleep':
     sleep_start_minute = row['minute']
   elif row['action'] == 'wakes up':
