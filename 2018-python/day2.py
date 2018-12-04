@@ -9,11 +9,11 @@ def get_char_counts(string):
     char_counts[char] = char_counts.get(char, 0) + 1
   return char_counts
 
-char_counts = [get_char_counts(string) for string in data]
-twos   = [2 in char_count.values() for char_count in char_counts]
-threes = [3 in char_count.values() for char_count in char_counts]
+def get_repeat_counts(char_counts, n):
+  return sum([1 for char_count in char_counts if n in char_count.values()])
 
-print(sum([int(x) for x in twos]) * sum([int(x) for x in threes]))
+char_counts = [get_char_counts(string) for string in data]
+print(get_repeat_counts(char_counts, 2) * get_repeat_counts(char_counts, 3))
 
 # Part 2
 def get_common_chars(first, second):
