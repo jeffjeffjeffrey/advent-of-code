@@ -1,26 +1,22 @@
 import sys
 import re
 
-# Parse the input
-data = []
-for row in sys.stdin.readlines():
-  fields = re.match('\[1518-(\d\d)-(\d\d) (\d\d):(\d\d)\] (.*)', row).groups()
-  data += [{'month': int(fields[0]), 'day': int(fields[1]), 'hour': int(fields[2]), 'minute': int(fields[3]), 'action': fields[4]}]
-
 # Record the number of times each guard is asleep for each minute of the midnight hour
-current_guard = None
+guard = None
 sleep_start_minute = None
 asleep_times = {}
-for row in sorted(data, key = lambda r: (r['month'], r['day'], r['hour'], r['minute'])):
-  if row['action'] == 'falls asleep':
-    sleep_start_minute = row['minute']
-  elif row['action'] == 'wakes up':
-    for m in range(sleep_start_minute, row['minute']):
-      if current_guard not in asleep_times:
-        asleep_times[current_guard] = [0] * 60
-      asleep_times[current_guard][m] += 1
+for row in sorted([row.strip() for row in sys.stdin.readlines()]):
+  minute = int(re.match('.*:(\d\d)\].*', row).groups()[0])
+  action = re.match('.*\] (.*)', row).groups()[0]
+  if action == 'falls asleep':
+    sleep_start_minute = minute
+  elif action == 'wakes up':
+    for m in range(sleep_start_minute, minute):
+      if guard not in asleep_times:
+        asleep_times[guard] = [0] * 60
+      asleep_times[guard][m] += 1
   else:
-    current_guard = int(re.match('Guard #(\d*) begins shift', row['action']).groups()[0])
+    guard = int(re.match('.*#(\d*) .*', action).groups()[0])
 
 # Part 1: Find the guard with the most total minutes asleep, and then find his sleepiest minute
 sleepiest_guard = max(asleep_times.keys(), key = (lambda k: sum(asleep_times[k])))
