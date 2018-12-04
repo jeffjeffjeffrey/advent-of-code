@@ -18,14 +18,12 @@ for row in sorted([row.strip() for row in sys.stdin.readlines()]):
   else:
     guard = int(re.match('.*#(\d*) .*', action).groups()[0])
 
-# Part 1: Find the guard with the most total minutes asleep, and then find his sleepiest minute
+# Part 1: Find the guard with the most total minutes asleep, and then find their sleepiest minute
 sleepiest_guard = max(asleep_times.keys(), key = (lambda k: sum(asleep_times[k])))
 sleepiest_minute = max(range(60), key = (lambda k: asleep_times[sleepiest_guard][k]))
-
 print(sleepiest_guard, sleepiest_minute, sleepiest_guard * sleepiest_minute)
 
-# Part 2: Find the guard asleep most often in a single minute, and then find his sleepiest minute
+# Part 2: Find the guard asleep most often in a single minute, and then find their sleepiest minute
 sleepiest_guard = max(asleep_times.keys(), key = (lambda k: max(asleep_times[k])))
 sleepiest_minute = max(range(60), key = (lambda k: asleep_times[sleepiest_guard][k]))
-
 print(sleepiest_guard, sleepiest_minute, sleepiest_guard * sleepiest_minute)
