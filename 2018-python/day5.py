@@ -1,27 +1,19 @@
 data = input().strip()
 
-# Part 1
-def remove_reaction(s):
-  for i in range(len(s) - 1):
-    if s[i] != s[i + 1] and s[i].lower() == s[i + 1].lower():
-      return s[:i] + s[(i+2):]
-  return s
-
-def react(s):
-  while True:
-    new_s = remove_reaction(s)
-    if new_s == s:
-      break
+# Build a fully-reacted stack of letters in one pass through the polymer, optionally ignoring a given letter
+def react(polymer, removable_letter = ' '):
+  reacted = ''
+  for letter in polymer:
+    if letter.lower() == removable_letter.lower():
+      continue
+    elif len(reacted) > 0 and reacted[-1] != letter and reacted[-1].lower() == letter.lower():
+      reacted = reacted[:-1]
     else:
-      s = new_s
-  return s
+      reacted += letter
+  return reacted
 
+# Part 1: React the polymer as-is and find its resultant length
 print(len(react(data)))
 
-# Part 2
-def remove_letter(string, letter):
-  return "".join([char for char in string if char.lower() != letter])
-
-pruned_strings = [remove_letter(data, letter) for letter in 'abcdefghijklmnopqrstuvwxyz']
-
-print(min([len(react(string)) for string in pruned_strings]))
+# Part 2: React the polymer while ignoring a specific letter of the alphabet. Find the shortest resultant length
+print(min([len(react(data, letter)) for letter in 'qwertyuiopasdfghjklzxcvbnm']))
