@@ -1,5 +1,3 @@
-import sys
-
 data = input().strip()
 
 # Part 1
