@@ -13,7 +13,7 @@ max_y = max(node[1] for node in nodes)
 min_y = min(node[1] for node in nodes)
 
 # Step 2: Find the nearest node to each location in the grid using Manhattan distance: |x - a| + |y - b|
-# Note infinite nodes along the way so we can avoid them in the end
+# Track infinite nodes along the way (nodes nearest any border location) so we can avoid them in the end
 
 def distance(first, second):
   return abs(first[0] - second[0]) + abs(first[1] - second[1])
