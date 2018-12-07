@@ -1,69 +1,69 @@
 import sys
 import re
 
-graph = [re.match('Step (.).*step (.).*', row).groups() for row in sys.stdin.readlines()]
-
 # Part 1
 
-# Step 1: create dicts of targets and dependency counts for each node in the directed graph
-targets = {}
-dependency_counts = {}
-for source, target in graph:
-  if source not in targets:
-    targets[source] = set(())
-  targets[source].add(target)
-  dependency_counts[source] = dependency_counts.get(source, 0)
-  dependency_counts[target] = dependency_counts.get(target, 0) + 1
+# Create a dict mapping each task to a list of the tasks that depend on it, excluding tasks with no dependencies
+dependencies = {}
+for step, dependent in [re.match('Step (.).*step (.).*', row).groups() for row in sys.stdin.readlines()]:
+  dependencies[step] = dependencies.get(step, []) + [dependent]
 
+# Create a dict of prereq counts for each task, including tasks with no prerequisites
+def get_prereq_counts(dependencies):
+  prereq_counts = {}
+  for step in dependencies:
+    for dependent in dependencies[step]:
+      prereq_counts[step] = prereq_counts.get(step, 0)
+      prereq_counts[dependent] = prereq_counts.get(dependent, 0) + 1
+  return prereq_counts
+
+def get_first_step(prereq_counts):
+  return sorted(prereq_counts.keys(), key = (lambda k: (prereq_counts[k], k)))[0]
+
+prereq_counts = get_prereq_counts(dependencies)
+total_steps = len(prereq_counts)
 ordering = ''
-while len(dependency_counts) > 0:
-  current_step = sorted(dependency_counts.keys(), key = (lambda k: (dependency_counts[k], k)))[0]
-  del dependency_counts[current_step]
-  for target in targets.pop(current_step, []):
-    dependency_counts[target] -= 1
-  ordering += current_step
+
+# Find the topological ordering by popping the first available step, decrementing its dependents' prereq counts, and repeating
+while len(ordering) < total_steps:
+  step = get_first_step(prereq_counts)
+  del prereq_counts[step]
+  for dependent in dependencies.get(step, []):
+    prereq_counts[dependent] -= 1
+  ordering += step
 
 print(ordering)
 
 # Part 2
 
-# Step 1: create dicts of targets and dependency counts for each node in the directed graph
-targets = {}
-dependency_counts = {}
-for source, target in graph:
-  if source not in targets:
-    targets[source] = set(())
-  targets[source].add(target)
-  dependency_counts[source] = dependency_counts.get(source, 0)
-  dependency_counts[target] = dependency_counts.get(target, 0) + 1
-
 def step_duration(step):
   return ord(step) - ord('A') + 1 + 60
 
+# Create workers with state that tracks the step they're working on and how much time they have left to complete it
+workers = [{'step': None, 'time_left': 0} for i in range(5)]
+prereq_counts = get_prereq_counts(dependencies)
 time = -1
 ordering = ''
-total_steps = len(dependency_counts)
-workers = [{'time_left': 0, 'step': None} for i in range(5)]
 
 while len(ordering) < total_steps:
   time += 1
-  # See who is done with their jobs
+  # See which occupied workers are done with their steps, and add completed steps to the overall ordering
   for worker in workers:
-    if worker['step'] and worker['time_left'] == 0: # if worker is done with their job, then remove it from the targets dict and reduce its dependent steps
-      for target in targets.pop(worker['step'], []):
-        dependency_counts[target] -= 1
+    if worker['step'] and worker['time_left'] == 0:
+      for dependent in dependencies.get(worker['step'], []):
+        prereq_counts[dependent] -= 1
       ordering += worker['step']
       worker['step'] = None
 
-  # Now assign available steps to available workers and increment time left for all workers
+  # Assign available steps to available workers and increment time left for all occupied workers
   for worker in workers:
-    if worker['time_left'] == 0 and len(dependency_counts) > 0:
-      current_step = sorted(dependency_counts.keys(), key = (lambda k: (dependency_counts[k], k)))[0]
-      if dependency_counts[current_step] == 0: # If the next step is available, put the worker to work
-        del dependency_counts[current_step]
-        worker['time_left'] = step_duration(current_step) - 1
-        worker['step'] = current_step
-    elif worker['step']: # If the worker is still working, increment their time left
+    if worker['time_left'] == 0 and len(prereq_counts) > 0:
+      step = get_first_step(prereq_counts)
+      if prereq_counts[step] == 0:
+        del prereq_counts[step]
+        worker['time_left'] = step_duration(step) - 1
+        worker['step'] = step
+    elif worker['step']:
       worker['time_left'] -= 1
 
 print(time)
