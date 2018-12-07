@@ -55,14 +55,14 @@ while len(ordering) < total_steps:
       ordering += worker['step']
       worker['step'] = None
 
-  # Assign available steps to available workers and increment time left for all occupied workers
+  # Assign available steps to available workers and decrement time left for all occupied workers
   for worker in workers:
     if worker['time_left'] == 0 and len(prereq_counts) > 0:
       step = get_first_step(prereq_counts)
       if prereq_counts[step] == 0:
         del prereq_counts[step]
-        worker['time_left'] = step_duration(step) - 1
         worker['step'] = step
+        worker['time_left'] = step_duration(step) - 1
     elif worker['step']:
       worker['time_left'] -= 1
 
