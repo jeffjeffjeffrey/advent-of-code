@@ -6,8 +6,8 @@ class Node:
     self.metadata = []
 
 def build_tree(numbers):
-  num_children, num_metadata = numbers[:2]
   node = Node()
+  num_children, num_metadata = numbers[:2]
   remaining_numbers = numbers[2:]
   for i in range(num_children):
     new_child, remaining_numbers = build_tree(remaining_numbers)
