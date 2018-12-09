@@ -4,8 +4,6 @@ num_players, highest_marble = [int(value) for value in re.match('(\d+).* (\d+).*
 
 # Part 1: Create a new array representing the circle of marbles at each turn
 
-scores = [0] * num_players
-
 def take_turn(marbles, current_index, new_marble):
   if new_marble % 23 == 0:
     remove_index = (current_index - 7) % len(marbles)
@@ -17,6 +15,7 @@ def take_turn(marbles, current_index, new_marble):
     marbles = marbles[:insert_index] + [new_marble] + marbles[insert_index:]
     return [marbles, insert_index, 0]
 
+scores = [0] * num_players
 player = 0
 marbles = [0]
 current_index = 0
@@ -27,9 +26,7 @@ for marble in range(1, highest_marble + 1):
 
 print(max(scores))
 
-# Part 2: Modify a doubly linked list at each turn of the marble game
-
-scores = [0] * num_players
+# Part 2: Modify a doubly linked list at each turn of the marble game, tracking the scores as we go
 
 class Marble:
   def __init__(self, value):
@@ -53,6 +50,7 @@ def remove(marble):
   del(marble)
   return [next_marble, removed_score]
 
+scores = [0] * num_players
 player = 0
 current_marble = Marble(0)
 current_marble.next = current_marble
