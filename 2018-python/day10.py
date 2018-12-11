@@ -13,29 +13,46 @@ def get_rectangle(stars):
   max_y = max([star['y'] for star in stars])
   return [min_x, max_x, min_y, max_y]
 
-def print_stars(stars):
-  min_x, max_x, min_y, max_y = get_rectangle(stars)
-  sky = [['.'] * (max_x - min_x + 1) for i in range(max_y - min_y + 1)]
-  for star in stars:
-    sky[star['y'] - min_y][star['x'] - min_x] = '#'
-  for row in sky:
-    print(''.join(row))
+# Let the stars move until their bounding rectangle area reaches a minimum
 
-sky_size = None
-previous_sky_size = None
+min_x, max_x, min_y, max_y = get_rectangle(stars)
+sky_size = (max_x - min_x) * (max_y - min_y)
+previous_sky_size = sky_size + 1
 seconds = 0
-while not previous_sky_size or sky_size < previous_sky_size:
+while sky_size < previous_sky_size:
+  for star in stars:
+    star['x'] += star['dx']
+    star['y'] += star['dy']
   min_x, max_x, min_y, max_y = get_rectangle(stars)
   previous_sky_size = sky_size
   sky_size = (max_x - min_x) * (max_y - min_y)
   seconds += 1
-  for star in stars:
-    star['x'] += star['dx']
-    star['y'] += star['dy']
+
+# Rewind the stars to their minimal position
 
 for star in stars:
-  star['x'] -= star['dx'] * 2
-  star['y'] -= star['dy'] * 2
+  star['x'] -= star['dx']
+  star['y'] -= star['dy']
 
-print("After " + str(seconds - 2) + " seconds:")
-print_stars(stars)
+# Print a minimal bounding rectangle around the stars
+
+print("After " + str(seconds - 1) + " seconds:")
+
+min_x, max_x, min_y, max_y = get_rectangle(stars)
+sky = [['.'] * (max_x - min_x + 1) for i in range(max_y - min_y + 1)]
+for star in stars:
+  sky[star['y'] - min_y][star['x'] - min_x] = '#'
+for row in sky:
+  print(''.join(row))
+
+# After 10333 seconds:
+# ..##....#....#..######..#.......#........####.....##....#.....
+# .#..#...#....#.......#..#.......#.......#....#...#..#...#.....
+# #....#..#....#.......#..#.......#.......#.......#....#..#.....
+# #....#..#....#......#...#.......#.......#.......#....#..#.....
+# #....#..######.....#....#.......#.......#.......#....#..#.....
+# ######..#....#....#.....#.......#.......#.......######..#.....
+# #....#..#....#...#......#.......#.......#.......#....#..#.....
+# #....#..#....#..#.......#.......#.......#.......#....#..#.....
+# #....#..#....#..#.......#.......#.......#....#..#....#..#.....
+# #....#..#....#..######..######..######...####...#....#..######
