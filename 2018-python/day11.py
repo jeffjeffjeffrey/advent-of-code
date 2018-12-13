@@ -57,3 +57,37 @@ for i in range(grid_size):
         optimal_subsquare['power'] = grid[x][y][square_size]
 
 print(optimal_subsquare)
+
+# Another implementation of Part 2, same time complexity but lower space complexity:
+
+# 300x300 grid of rectangular power totals.
+# Each point (x, y) is the sum of powers within the rectangle bounded by (x, y) in the northwest and (299, 299) in the southeast.
+rect = {}
+
+# Start at the bottom-right and iterate through the grid,
+# computing the values of rect and
+# computing the all subsquare powers along the way
+# using inclusion-exclusion on rect
+best_square = {'point': None, 'size': None, 'power': None}
+for i in range(grid_size):
+  for j in range(grid_size):
+    x = grid_size - i - 1
+    y = grid_size - j - 1
+    rect[(x, y)] = \
+      get_power(x, y) + \
+      rect.get((x + 1, y), 0) + \
+      rect.get((x, y + 1), 0) - \
+      rect.get((x + 1, y + 1), 0)
+    for square_size in range(1, min(grid_size - x, grid_size - y) + 1):
+      power = \
+        rect.get((x, y), 0) - \
+        rect.get((x + square_size, y), 0) - \
+        rect.get((x, y + square_size), 0) + \
+        rect.get((x + square_size, y + square_size), 0)
+      if not best_square['power'] or best_square['power'] < power:
+        best_square['point'] = (x, y)
+        best_square['size'] = square_size
+        best_square['power'] = power
+
+print(best_square)
+
