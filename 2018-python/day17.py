@@ -50,7 +50,7 @@ def fill_reservoir(grid, square):
 
 def flow(grid, square, x_direction = 0):
   # stop flowing if we've hit a wall or gone off the map
-  if square[1] > max_y or grid.get(square, '.') == '#':
+  if square[1] > max_y or grid.get(square, '.') in ['#', '~']:
     return None
 
   # always flow downward if possible
