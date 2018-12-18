@@ -1,5 +1,4 @@
 import sys
-import re
 from queue import Queue
 
 grid = {}
