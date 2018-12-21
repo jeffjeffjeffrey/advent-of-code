@@ -144,9 +144,9 @@ def run_program(ip, register, verbose = False):
     if ip == 28:
       exit_value = register[2]
       if previous_exit_value == None:
-        print("Part 1:", exit_value)
+        print("Part 1 (elf code):", exit_value)
       if exit_value in exit_values:
-        print("Part 2:", previous_exit_value)
+        print("Part 2 (elf code):", previous_exit_value)
         break
       exit_values.add(exit_value)
       previous_exit_value = exit_value
@@ -157,54 +157,63 @@ ip = 0
 register = [0, 0, 0, 0, 0, 0]
 run_program(ip, register)
 
-# Below is an (unsuccessful) attempt to transcribe the elf code into Python. Keeping it here in case it comes in handy later.
+# A much faster implementation of the elf code is shown below, transcribed into Python. 
 
-# 2208870 was too low
+L = 65536
+M = 16777215
+N = 2238642
+P = 65899
 
-# L = 65536
-# M = 16777215
-# N = 2238642
-# P = 65899
+#0,1, 2, 3, 5
+a, b, c, d, e = [0, 0, 0, 0, 0]
 
-# #0,1, 2, 3, 5
-# a, b, c, d, e = [0, 0, 0, 0, 0]
+c = 123
+c = c & 456
+if c == 72:
+  c = 0
+else:
+  print("BAD BANI")
 
-# c = 123
-# c = c & 456
-# if c == 72:
-#   c = 0
-# else:
-#   print("BAD BANI")
+exit_values = set(())
+previous_exit_value = None
+done = False
+while not done:
+  # cmd 6
+  e = c | L
+  c = N
 
-# while True:
-#   # cmd 6
-#   e = c | L
-#   c = N
+  while True:
+    # cmd 8
+    d = e & 255
+    c = c + d
+    c = c & M
+    c = c * P
+    c = c & M
 
-#   while True:
-#     # cmd 8
-#     d = e & 255
-#     c = c + d
-#     c = c & M
-#     c = c * P
-#     c = c & M
+    if 256 > e:
+      exit_value = c
+      if previous_exit_value == None:
+        print("Part 1 (python):", exit_value)
+      if exit_value in exit_values:
+        print("Part 2 (python):", previous_exit_value)
+        done = True
+      exit_values.add(exit_value)
+      previous_exit_value = exit_value
+      break
+    else:
+      # cmd 17
+      e = e // 256 # This is what the code below is doing
 
-#     if 256 > e: # for some reason this loop is never entered
-#       # cmd 17
-#       d = 0
-#       while True:
-#         # cmd 18
-#         b = d + 1
-#         b = b * 256
+      # d = 0
+      # while True:
+      #   # cmd 18
+      #   b = d + 1
+      #   b = b * 256
 
-#         if b > e:
-#           e = d
-#           break # goto 8
-#         else:
-#           d += 1 
-#           # goto 18
-#     else:
-#       # print(c)
-#       if c == a:
-#         break
+      #   if b > e:
+      #     e = d
+      #     break # goto 8
+      #   else:
+      #     d += 1 
+      #     # goto 18
       
