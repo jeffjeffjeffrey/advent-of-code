@@ -102,6 +102,10 @@ print("Part 2 (dfs):", len([room for room in distances if distances[room] >= 100
 # Third technique: do it all in one quick pass using a stack.
 # Credit to the subreddit for this simple approach
 
+# Note that this shortcut approacch doesn't work for some edge cases, like these:
+# data = '^NNNNNEEEEESS(E|WSS)S$'
+# data = '^NNNNNEEEEESSES$'
+
 directions = data[1:-2]
 
 positions = []
